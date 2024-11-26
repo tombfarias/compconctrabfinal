@@ -50,7 +50,7 @@ class Jogo(multiprocessing.Process):
                 jogador_atual = self.jogador1
                 
             if self.escolhe_tab: #se for a primeira jogada ou for enviado pra um tabuleiro já encerrado
-                jogador_atual.envia("Jogada tab grande")
+                jogador_atual.envia("Jogada tab grande") # Requisita jogada
                 A = jogador_atual.recebe(1024) # Le a jogada do jogador
                 A = conv('G', A)
                 #tratar o A pra ser entrada

@@ -4,8 +4,8 @@ import sys
 import multiprocessing
 
 class Jogador():
-    def __init__(self, username, socket, endereco):
-        self.username = username
+    def __init__(self, socket, endereco):
+        self.username = ''
         self.socket = socket
         self.endereco = endereco
 
