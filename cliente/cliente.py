@@ -21,7 +21,13 @@ class Cliente():
             except Exception as e:
                 print(f"Erro: {e}. Tentando novamente em 5s...")
                 time.sleep(5)
-
+    
+    def put_username(self):
+        msg = cliente.recebe(1024)
+        print(msg)
+        if msg == "Digite seu username: ":
+            msg = input()
+            cliente.envia(msg)
 
     def envia(self, msg):
         self.socket.send(msg.encode('utf-8'))
@@ -38,7 +44,33 @@ class Cliente():
     
     def close(self):
         self.socket.close()
+
+    def jogada(self):
+        jogada = input()
+        self.envia(jogada)
+
     
+    def run(self):
+        while True:
+            msg = self.recebe(1024)
+            print(msg)
+            if msg == "Digite sua jogada: ":
+                self.jogada()
+            elif msg == "Jogada inválida. Tente novamente.":
+                self.jogada() 
+            elif msg == "Você venceu!" or msg == "Você perdeu!" or msg == "Empate!":
+                print(msg)
+                break
+            else:
+                continue
+    
+
+
 
 if __name__ == "__main__":
     cliente = Cliente()
+    cliente.put_username()
+
+    cliente.run()
+
+    

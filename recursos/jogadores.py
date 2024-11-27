@@ -1,7 +1,5 @@
 import socket
-import select
-import sys
-import multiprocessing
+import time
 
 class Jogador():
     def __init__(self, socket, endereco):
@@ -27,7 +25,14 @@ class Jogador():
     
     def put_username(self):
         self.envia("Digite seu username: ")
-        self.username = self.recebe(1024)
+        while True:
+            try:
+                self.username = self.recebe(1024)
+                if self.username:
+                    break
+            except Exception as e:
+                time.sleep(2)
+                continue
 
     
     def get_endereco(self):
