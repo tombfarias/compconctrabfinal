@@ -13,10 +13,17 @@ class Jogador():
         return self.username
     
     def envia(self, msg):
-        self.socket.send(msg)
+        self.socket.send(msg.encode('utf-8'))
     
     def recebe(self, tam):
-        return self.socket.recv(tam)
+        while True:
+            try:
+                return self.socket.recv(tam).decode('utf-8')
+            except socket.error as e:
+                if e.errno == 10035:
+                    continue
+                else:
+                    raise e
     
     def put_username(self):
         self.envia("Digite seu username: ")

@@ -3,49 +3,42 @@ import time
 
 
 HOST = 'localhost'
-PORT = 10001
+PORT = 3001
 
 class Cliente():
     def __init__(self):
         super().__init__()
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.connect()
-
         self.username = ''
+        self.connect()
 
     def connect(self):
         while True:
             try:
                 self.socket.connect((HOST, PORT))
+                print("Conectando ao servidor...")
                 break
-            except:
-                print("Não foi possível conectar ao servidor. Tentando novamente em 5s...")
+            except Exception as e:
+                print(f"Erro: {e}. Tentando novamente em 5s...")
                 time.sleep(5)
-
-
-    def put_username(self):
-        self.username = input("Digite seu username: ")
-        self.socket.send(self.username.encode('utf-8'))
 
 
     def envia(self, msg):
         self.socket.send(msg.encode('utf-8'))
     
     def recebe(self, tam):
-        return self.socket.recv(tam)
+        while True:
+            try:
+                return self.socket.recv(tam).decode('utf-8')
+            except socket.error as e:
+                if e.errno == 10035:
+                    continue
+                else:
+                    raise e
     
     def close(self):
         self.socket.close()
     
 
-cliente = Cliente()
-cliente.put_username()
-print("Para sair digite 'fim'")
-while True:
-    # Trocar depois
-    msg = input("Digite a sua jogada: ")
-    if msg == 'fim': break
-    cliente.envia(msg)
-    msg = cliente.recebe(1024)
-    print(str(msg, encoding='utf-8'))
-    
+if __name__ == "__main__":
+    cliente = Cliente()
