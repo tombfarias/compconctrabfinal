@@ -71,17 +71,6 @@ class tab_P:
             r = True
         
         return r
-        #if self.ocupadas >= 3:
-        #    for i in range(3):
-        #        if ((self.matrizP[i][0] == self.matrizP[i][1] == self.matrizP[i][2] and self.matrizP[i][0] != 0) or 
-        #            (self.matrizP[0][i] == self.matrizP[1][i] == self.matrizP[2][i] and self.matrizP[0][i] != 0)):
-        #            print("vitoria da coluna/linha")
-        #            return True
-        #    if((self.matrizP[0][0] == self.matrizP[1][1] == self.matrizP[2][2]) or
-        #       (self.matrizP[2][0] == self.matrizP[1][1] == self.matrizP[0][2])) and self.matrizP[1][1] !=0 :
-        #        print("vitoria da diagonal")
-        #        return True
-        #return False
         
     def print(self):
         for linha in self.matrizP:
@@ -104,7 +93,8 @@ class tab_G:
             print(f"Tabuleiro encerrado, aqqui venceu {self.matrizG[coord].vitoria}")
             return 10
         
-        B = input(f'Jogada tab menor {coord + 1} \n player = {player} \n')
+        B = player.joga()
+        input(f'Jogada tab menor {coord + 1} \n player = {player} \n')
         if B.upper() == "FIM":
             print("Digite 'fim' novamente")
             return 10
