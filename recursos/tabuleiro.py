@@ -5,7 +5,7 @@ def conv(tab, coord, player):
             vert, hori = int(coord[0])-1, int(coord[-1])-1
             #print("try")
             if vert in coords and hori in coords:
-                print("jogada aceita", vert, hori)
+                #print("jogada aceita", vert, hori)
                 break
             else: 
                 player.envia("As coordenadas devem estar entre 1,2,3\n")
@@ -45,20 +45,20 @@ class tab_P:
             pos = conv('G', str(vert+1)+str(hori+1), player)
             self.placar1[pos] = 1
             self.placar2[pos] = player.peca 
-            print(self.placar1)
-            print(self.placar2)
+            #print(self.placar1)
+            #print(self.placar2)
             if self.fim(vert, hori,player): #testa se o tabuleiro acabou
                 self.vitoria = player #se acabou define vitória
-                print(f'{self.vitoria} venceu esse tabuleiro\n')
+                player.envia(f'Você venceu esse tabuleiro\n')
             if self.ocupadas == 9: #se ocupou todas as casas e ainda não tem vitória, deu velha
                 self.vitoria = 'V'
-                print("Deu velha nesse tabuleiro\n")
+                player.envia("Deu velha nesse tabuleiro\n")
             return 1 #Se alguma jogada foi feita
     
     def fim(self, v,h, player):
         #lista_A, lista_B = [],[]
-        print("V= ",v)
-        print("H=",h)
+        #print("V= ",v)
+        #print("H=",h)
         r = False
         if ((v+h) == 4 or v==h):
             if self.matrizP[0][0] == self.matrizP[1][1] == self.matrizP[2][2] == player.peca:
@@ -97,7 +97,7 @@ class tab_G:
             self.placar1[coord] = 1
             self.placar2[coord] = self.matrizG[coord].vitoria
             self.encerradas = sum(self.placar1)
-            print(f"Tabuleiro encerrado, aqui venceu {self.matrizG[coord].vitoria}\n")
+            palyer.envia(f"Tabuleiro encerrado, aqui venceu {self.matrizG[coord].vitoria}\n")
             return 10
         player.envia(f'Jogada tab menor {coord + 1}\n')
 
@@ -124,11 +124,11 @@ class tab_G:
         for LINHA in range(3):
             for linha in range(3):
                 for matriz in range(3*LINHA,3*(LINHA+1)):
-                    print("|", (self.matrizG[matriz]).matrizP[linha],"|", end='')
+                    #print("|", (self.matrizG[matriz]).matrizP[linha],"|", end='')
                     j1msg += f"| {(self.matrizG[matriz]).matrizP[linha]} | "
                     j2msg += f"| {(self.matrizG[matriz]).matrizP[linha]} | "
                 
-                print('\n')
+                #print('\n')
                 j1.envia(j1msg+'\n')
                 j2.envia(j2msg+'\n')
                 j1msg, j2msg = "",""
@@ -136,7 +136,7 @@ class tab_G:
             j1.envia("----------------------------------------\n")
             j2.envia("----------------------------------------\n")
 
-    def fim(self):
+    def fim(self, j1,j2):
         pontosA = 0
         pontosB = 0
         pontosV = 0
@@ -149,11 +149,14 @@ class tab_G:
                 pontosV+=1
         if pontosA>pontosB:
             self.vitoria = "X"
+            j1.envia("Você venceu!")
         elif pontosB>pontosA:
-            self.vitoria = "0"
+            self.vitoria = "O"
+            j2.envia("Você venceu!")
         else:
             self.vitoria = "Velha"
-            print("Empatou")
+            j1.envia("Empate!")
+            j2.envia("Empate!")
             return 0;
         print(f"{self.vitoria} venceu o jogo")
         return 1;

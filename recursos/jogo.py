@@ -47,7 +47,7 @@ class Jogo(multiprocessing.Process):
         escolhe = True
         while self.tabuleiro.encerradas < 9: #enquanto o jogo grande não acabar, continua
             self.tabuleiro.print(self.jogador1, self.jogador2)
-            print(self.tabuleiro.placar1)
+            #print(self.tabuleiro.placar1)
             #print()
             #print(self.tabuleiro.placar2)
             
@@ -82,7 +82,7 @@ class Jogo(multiprocessing.Process):
                 continue
             else:
                 A = jogada
-                print("jogada feita")
+                #print("jogada feita")
                 escolhe = False
                 troca = True
             #if self.tabuleiro.encerradas == 9:

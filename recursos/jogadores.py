@@ -51,10 +51,10 @@ class Jogador():
             try:
                 #print("ENTREI NO TRY")
                 retorno = self.recebe(1024)
-                print("recebido")
+                #print("recebido")
                 return retorno
             except Exception as e:
-                print("Entrei no Except")
+                #print("Entrei no Except")
                 time.sleep(2)
                 continue
 
