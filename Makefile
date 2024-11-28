@@ -2,6 +2,13 @@
 run:
 	python server/server.py
 
+# Rodar o server.c, server.c está na pasta server
+
+run-c:
+	gcc -o a.out server/server.c -lm
+	./a.out
+	rm -f a.out
+
 # Rodar o cliente.py, cliente.py está na pasta cliente
 run-client:
 	python cliente/cliente.py
