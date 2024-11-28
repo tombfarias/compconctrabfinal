@@ -20,15 +20,14 @@ class Jogo(multiprocessing.Process):
         self.enviar("O jogo terminou empatado!")
 
     def requisitarJogada(self, jogador):
-        self.enviar("Digite a sua jogada: ")
+        jogador.enviar("Digite a sua jogada: ")
         return jogador.recebe(1024)
     
     def requisitarJogadaInvalida(self, jogador):
-        self.enviar("Jogada inválida. Tente novamente: ")
+        jogador.enviar("Jogada inválida. Tente novamente: ")
         return jogador.recebe(1024)
 
     def set_jogadores(self, jogador1, jogador2):
-        print(f"{jogador1} {jogador2}")
         self.jogador1 = jogador1
         self.jogador2 = jogador2
 
@@ -50,25 +49,33 @@ class Jogo(multiprocessing.Process):
     def start(self):
         jogador_atual = self.jogador2
         troca = True
+
+
         while self.tabuleiro.encerradas < 9: #enquanto o jogo grande não acabar, continua
-            print(self.tabuleiro.toString())
-            # print(self.tabuleiro.placar1)
-            # print()
-            # print(self.tabuleiro.placar2)
-            
+            # Cada rodada é uma iteração do loop
+
+            # clear a cada rodada
+            self.jogador1.envia("clear")
+            self.jogador2.envia("clear")
+
+            self.jogador1.envia(self.tabuleiro.toString())
+            self.jogador2.envia(self.tabuleiro.toString())
             if troca:
                 if jogador_atual == self.jogador1:
                     jogador_atual = self.jogador2
                 else:
                     jogador_atual = self.jogador1
-                
+            
+            # print(f"Jogador atual: {jogador_atual.username}")
+            # print(f"escolhe_tab: {self.escolhe_tab}")
+
             if self.escolhe_tab: #se for a primeira jogada ou for enviado pra um tabuleiro já encerrado
-                self.enviar("Digite a sua jogada: ")
+                jogador_atual.envia("Digite a sua jogada: ")
                 A = jogador_atual.recebe(1024)
                 if A.upper() == "FIM":
                     print("Jogo encerrado")
                     break
-                A = conv('G', A)
+                A = conv('G', A, jogador_atual)
                 #tratar o A pra ser entrada
             jogada = self.tabuleiro.movimentoG(A, jogador_atual) 
             if jogada == 10: #tab_pequeno encerrado

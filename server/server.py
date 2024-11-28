@@ -17,7 +17,7 @@ from jogadores import Jogador
 from jogo import Jogo
 
 HOST = 'localhost'
-PORT = 3001
+PORT = 4004
 TOTAL_JOGADORES = 10
 
 class Server():
@@ -46,6 +46,7 @@ class Server():
     def aceitaJogadores(self):
         try:
             clisock, endr = self.server.accept()
+            # print(endr)
             self.jogadores[clisock] = Jogador(clisock, endr)
             self.jogadores[clisock].put_username()
             # self.entradas.append(clisock)
@@ -62,7 +63,6 @@ class Server():
                 leitura, escrita, excecao = select.select(self.entradas, [], [])
                 for pronto in leitura:
                     if pronto == self.fimProgramaR:
-                        # self.fimProgramaR.send(b'fim')
                         self.fimProgramaR.close()
                         self.fimProgramaW.close()
                         self.server.close()

@@ -4,15 +4,15 @@ def conv(tab, coord, jogador):
     while True:
         try:
             vert, hori = int(coord[0])-1, int(coord[-1])-1
-            print("try")
+            # print("try")
             if vert in coords and hori in coords:
                 break
             else:
-                jogador.envia("Erro: As coordenadas devem estar entre 1,2,3")
+                jogador.envia("As coordenadas devem estar entre 1,2,3: ")
                 coord = jogador.recebe(1024)
         except ValueError:
             #print("except")
-            jogador.envia("Erro: Coordenadas inválidas, tente novamente")
+            jogador.envia("Coordenadas inválidas, tente novamente: ")
             coord = jogador.recebe(1024)
     if tab == 'P':
         return vert, hori
@@ -38,11 +38,17 @@ class tab_P:
             return 0 #se a casa já estiver ocupada ou nao existir
         else:
             self.matrizP[vert][hori] = player
-            pos = conv('G', str(vert)+str(hori))
+            pos = conv('G', str(vert)+str(hori), player)
             self.placar1[pos] = 1
             self.placar2[pos] = player 
+
+            ###########
+
             print(self.placar1)
             print(self.placar2)
+
+            ############
+
             if self.fim(vert, hori,player): #testa se o tabuleiro acabou
                 self.vitoria = player #se acabou define vitória
                 print(f'{self.vitoria} venceu esse tabuleiro')
@@ -97,17 +103,22 @@ class tab_G:
             print(f"Tabuleiro encerrado, aqqui venceu {self.matrizG[coord].vitoria}")
             return 10
         
+
+        player.envia("Digite a sua jogada: ")
+        B = player.recebe(1024)
+
         B = input(f'Jogada tab menor {coord + 1} \n player = {player} \n')
         if B.upper() == "FIM":
+
             print("Digite 'fim' novamente")
             return 10
-        B1, B2 = conv('P', B)
+        B1, B2 = conv('P', B, player)
         print(B1,B2)
         jogada = self.matrizG[coord].movimento(player, B1,B2) 
         if jogada == 0: #Movimento inválido dentro do tab_pequeno
             return 11
         else:
-            r = conv('G', B)
+            r = conv('G', B, player)
             print("Jogador enviado para tab", r + 1)
             return r
         
@@ -121,6 +132,13 @@ class tab_G:
                 mensagem = mensagem + '\n' 
             mensagem = mensagem + "----------------------------------------\n"
         return str(mensagem)
+    
+    def enviarTabuleiro(self, jogador):
+        jogador.envia(self.toString())
+        jogador.envia("Placar: \n")
+        jogador.envia(str(self.placar1) + '\n')
+
+
             
     def fim(self, j1,j2):
         pontosA = 0
