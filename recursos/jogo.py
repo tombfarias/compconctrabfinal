@@ -4,9 +4,11 @@ from tabuleiro import tab_P, tab_G, conv
 class Jogo(multiprocessing.Process):
     def __init__(self, jogador1, jogador2, canal):
         super().__init__()
+        jogador1.peca = 'X'
+        jogador2.peca = 'O'
         self.set_jogadores(jogador1, jogador2)
         self.tab_P = tab_P()
-        self.tabG = tab_G()
+        self.tabuleiro = tab_G()
 
         self.canal = canal
 
@@ -40,40 +42,48 @@ class Jogo(multiprocessing.Process):
     
     def start(self):
         jogador_atual = self.jogador2
+        #print(type(jogador_atual))
         troca = True
+        escolhe = True
         while self.tabuleiro.encerradas < 9: #enquanto o jogo grande não acabar, continua
-            self.tabuleiro.print()
+            self.tabuleiro.print(self.jogador1, self.jogador2)
             print(self.tabuleiro.placar1)
-            print()
-            print(self.tabuleiro.placar2)
+            #print()
+            #print(self.tabuleiro.placar2)
             
             if troca:
                 if jogador_atual == self.jogador1:
                     jogador_atual = self.jogador2
                 else:
+                    #print(type(jogador_atual))
                     jogador_atual = self.jogador1
+                    #print(type(jogador_atual))
                 
-            if self.escolhe_tab: #se for a primeira jogada ou for enviado pra um tabuleiro já encerrado
-                A = input("Jogada tab grande \n")
-                if A.upper() == "FIM":
+            if escolhe: #se for a primeira jogada ou for enviado pra um tabuleiro já encerrado
+                #print("jogador atual é um", type(jogador_atual))
+
+                #A = jogador_atual.joga()
+                jogador_atual.envia("Jogada tab grande\n")
+                A = jogador_atual.joga()
+                if "FIM" in A.upper():
                     print("Jogo encerrado")
                     break
-                A = conv('G', A)
+                A = conv('G', A, jogador_atual)
                 #tratar o A pra ser entrada
             jogada = self.tabuleiro.movimentoG(A, jogador_atual) 
             if jogada == 10: #tab_pequeno encerrado
-                self.escolhe_tab = True
+                escolhe= True
                 troca = False
                 
                 continue
             if jogada == 11: #Movimento inválido dentro do tab_pequeno
-                self.escolhe_tab = False
+                escolhe = False
                 troca = False
                 continue
             else:
                 A = jogada
                 print("jogada feita")
-                self.escolhe_tab = False
+                escolhe = False
                 troca = True
             #if self.tabuleiro.encerradas == 9:
                 #break

@@ -1,16 +1,22 @@
-def conv(tab, coord):
+def conv(tab, coord, player):
     coords = [0,1,2]
     while True:
         try:
             vert, hori = int(coord[0])-1, int(coord[-1])-1
-            print("try")
+            #print("try")
             if vert in coords and hori in coords:
+                print("jogada aceita", vert, hori)
                 break
-            else:
-                coord = input("As coordenadas devem estar entre 1,2,3\n")
+            else: 
+                player.envia("As coordenadas devem estar entre 1,2,3\n")
+                coord = player.joga()
         except ValueError:
+            if coord.upper() == "FIM":
+                return -1,-1
             #print("except")
-            coord = input("Coordenadas inválidas, tente novamente\n")   
+           # coord = player.joga() 
+            player.envia("Caracteres inválidos, tente novamente\n")   
+            coord = player.joga()
     if tab == 'P':
         return vert, hori
     if tab == 'G':
@@ -31,21 +37,22 @@ class tab_P:
 
     def movimento(self,player, vert, hori): 
         if self.matrizP[vert][hori] != 0 or (vert > 3) or (hori > 3):
-            print("Movimento inválido")
+            print("Movimento inválido\n")
+            player.envia("Movimento inválido\n")
             return 0 #se a casa já estiver ocupada ou nao existir
         else:
-            self.matrizP[vert][hori] = player
-            pos = conv('G', str(vert)+str(hori))
+            self.matrizP[vert][hori] = player.peca
+            pos = conv('G', str(vert+1)+str(hori+1), player)
             self.placar1[pos] = 1
-            self.placar2[pos] = player 
+            self.placar2[pos] = player.peca 
             print(self.placar1)
             print(self.placar2)
             if self.fim(vert, hori,player): #testa se o tabuleiro acabou
                 self.vitoria = player #se acabou define vitória
-                print(f'{self.vitoria} venceu esse tabuleiro')
+                print(f'{self.vitoria} venceu esse tabuleiro\n')
             if self.ocupadas == 9: #se ocupou todas as casas e ainda não tem vitória, deu velha
                 self.vitoria = 'V'
-                print("Deu velha nesse tabuleiro")
+                print("Deu velha nesse tabuleiro\n")
             return 1 #Se alguma jogada foi feita
     
     def fim(self, v,h, player):
@@ -54,19 +61,19 @@ class tab_P:
         print("H=",h)
         r = False
         if ((v+h) == 4 or v==h):
-            if self.matrizP[0][0] == self.matrizP[1][1] == self.matrizP[2][2] == player:
-                print("vitoria da diagonal prnicipal")
+            if self.matrizP[0][0] == self.matrizP[1][1] == self.matrizP[2][2] == player.peca:
+                #print("vitoria da diagonal prnicipal")
                 r = True
-            if self.matrizP[2][0] == self.matrizP[1][1] == self.matrizP[0][2] == player:
-                print("vitoria da diagonal secundaria")
+            if self.matrizP[2][0] == self.matrizP[1][1] == self.matrizP[0][2] == player.peca:
+                #print("vitoria da diagonal secundaria")
                 r = True
         
         
-        if self.matrizP[v][0] == self.matrizP[v][1] == self.matrizP[v][2] == player:
+        if self.matrizP[v][0] == self.matrizP[v][1] == self.matrizP[v][2] == player.peca:
             #print("vitoria da linha")
             r = True
         
-        if self.matrizP[0][h] == self.matrizP[1][h] == self.matrizP[2][h] == player:
+        if self.matrizP[0][h] == self.matrizP[1][h] == self.matrizP[2][h] == player.peca:
             #print("vitoria da coluna")
             r = True
         
@@ -90,48 +97,60 @@ class tab_G:
             self.placar1[coord] = 1
             self.placar2[coord] = self.matrizG[coord].vitoria
             self.encerradas = sum(self.placar1)
-            print(f"Tabuleiro encerrado, aqqui venceu {self.matrizG[coord].vitoria}")
+            print(f"Tabuleiro encerrado, aqui venceu {self.matrizG[coord].vitoria}\n")
             return 10
-        
+        player.envia(f'Jogada tab menor {coord + 1}\n')
+
         B = player.joga()
-        input(f'Jogada tab menor {coord + 1} \n player = {player} \n')
         if B.upper() == "FIM":
-            print("Digite 'fim' novamente")
+            #print("Digite 'fim' novamente")
             return 10
-        B1, B2 = conv('P', B)
-        print(B1,B2)
+        B1, B2 = conv('P', B, player)
+        if B1 == -1 and B2 == -1:
+            #print("Segurança")
+            return 10
+        #print(B1,B2)
         jogada = self.matrizG[coord].movimento(player, B1,B2) 
         if jogada == 0: #Movimento inválido dentro do tab_pequeno
             return 11
         else:
-            r = conv('G', B)
-            print("Jogador enviado para tab", r + 1)
+            r = conv('G', B, player)
+            player.envia(f'Jogador enviado para tab {r + 1}\n')
             return r
         
 
-    def print(self):
+    def print(self, j1, j2):
+        j1msg, j2msg = "",""
         for LINHA in range(3):
             for linha in range(3):
                 for matriz in range(3*LINHA,3*(LINHA+1)):
                     print("|", (self.matrizG[matriz]).matrizP[linha],"|", end='')
+                    j1msg += f"| {(self.matrizG[matriz]).matrizP[linha]} | "
+                    j2msg += f"| {(self.matrizG[matriz]).matrizP[linha]} | "
+                
                 print('\n')
+                j1.envia(j1msg+'\n')
+                j2.envia(j2msg+'\n')
+                j1msg, j2msg = "",""
             print("----------------------------------------")
-            
+            j1.envia("----------------------------------------\n")
+            j2.envia("----------------------------------------\n")
+
     def fim(self):
         pontosA = 0
         pontosB = 0
         pontosV = 0
         for player in self.placar2:
-            if player == 'A':
+            if player == 'X':
                 pontosA+=1
-            elif player == 'B':
+            elif player == 'O':
                 pontosB+=1
             else:
                 pontosV+=1
         if pontosA>pontosB:
-            self.vitoria = "A"
+            self.vitoria = "X"
         elif pontosB>pontosA:
-            self.vitoria = "B"
+            self.vitoria = "0"
         else:
             self.vitoria = "Velha"
             print("Empatou")
