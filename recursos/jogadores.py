@@ -5,9 +5,19 @@ class Jogador():
         self.username = ''
         self.socket = socket
         self.endereco = endereco
+        self.peca = ''
+
+    def set_peca(self, peca):
+        self.peca = peca
+
+    def get_peca(self):
+        return self.peca
 
     def __str__(self):
-        return self.username
+        return self.peca
+    
+    def __repr__(self):
+        return self.peca
     
     def envia(self, msg):
         self.socket.send(msg.encode('utf-8'))

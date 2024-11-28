@@ -100,6 +100,14 @@ class Server():
 
             jogador1 = self.jogadoresEmEspera.get()
             jogador2 = self.jogadoresEmEspera.get()
+
+            # jogador1 é o X
+            # jogador2 é a O
+            jogador1.set_peca("X")
+            jogador2.set_peca("O")
+
+
+
             novoJogo = Jogo(jogador1, jogador2, canalFilho).run()
             self.jogos.append(novoJogo)
 

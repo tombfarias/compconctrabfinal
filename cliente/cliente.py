@@ -61,7 +61,7 @@ class Cliente():
         msg = self.recebe(self.socket, 1024)
         print(msg)
         if msg == "Digite seu username: ":
-            msg = input()
+            msg = self.inputJogador()
             self.envia(self.socket, msg)
 
     def envia(self, socket, msg):
@@ -93,7 +93,7 @@ class Cliente():
         exit(1)
 
     def jogadaValida(self, jogada):
-        
+
         if len(jogada) != 2:
             return False
         if not jogada[0].isdigit() or not jogada[1].isdigit():
@@ -101,13 +101,21 @@ class Cliente():
         if int(jogada[0]) not in range(1, 4) or int(jogada[1]) not in range(1, 4):
             return False
         return True
-    
+
+    def inputJogador(self):
+        mensagem = input()
+        if mensagem == 'fim':
+            self.close()
+        return mensagem
+
     def jogada(self):
-        jogada = input()
+        jogada = self.inputJogador()
         # Validar jogada (a jogada dever ser uma string de tam 2 contendo 2 numeros de [1 a 3])
         while not self.jogadaValida(jogada):
-            jogada = input("Jogada inválida. Tente novamente: ")
-
+            print("Jogada inválida. Tente novamente: ")
+            jogada = self.inputJogador()
+        
+        jogada = str(int(jogada[0]) - 1) + str(int(jogada[1]) - 1)
         self.envia(self.socket, jogada)
 
     
