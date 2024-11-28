@@ -80,8 +80,9 @@ class Jogo(multiprocessing.Process):
             tabP_atual = self.tabuleiro.movimentoG(jogador_atual, tabP_atual)
 
 
-            
-        return self.tabuleiro.fim()
+        #return self.tabuleiro.fim()
+        print("Fim do jogo")
+        fim = self.tabuleiro.fim(self.jogador1, self.jogador2)
     
     def close(self):
         self.canal.close()

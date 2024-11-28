@@ -1,7 +1,7 @@
 from jogadores import Jogador
 def conv(tab, coord, jogador):
     coords = [0,1,2]
-    print(f"coord = {coord}")
+    # print(f"coord = {coord}")
     while True:
         try:
             vert, hori = int(coord[0]), int(coord[1])
@@ -9,7 +9,7 @@ def conv(tab, coord, jogador):
             if vert in coords and hori in coords:
                 break
             else:
-                print(f"vert = {vert}, hori = {hori}")
+                # print(f"vert = {vert}, hori = {hori}")
                 jogador.envia("As coordenadas devem estar entre 1, 2, 3: ")
                 coord = jogador.recebe(1024)
         except ValueError:
@@ -48,7 +48,7 @@ class tab_P:
             player.envia(f"Digite a sua jogada no tabuleiro {self.imprimirCoordenadas()}: ")
             
             coordenada = player.recebe(1024)
-            print(f"coordenada = {coordenada}")
+            # print(f"coordenada = {coordenada}")
             vert, hori = conv('P', coordenada, player)
 
             if self.matrizP[vert][hori] != 0 or (vert > 3) or (hori > 3):
@@ -62,8 +62,8 @@ class tab_P:
 
                 ###########
 
-                print(self.placar1)
-                print(self.placar2)
+                #print(self.placar1)
+                #print(self.placar2)
 
                 ############
 
@@ -119,6 +119,17 @@ class tab_G:
         self.encerradas = 0
         self.vitoria = 0
     
+    def displayTabG(self):
+        mensagem = ''
+        mensagem = mensagem + "----------------------------------------\n"
+        for i in range(3):
+            for j in range(3):
+                matriz = i*3 + j
+                mensagem = mensagem + "| " + str(self.matrizG[matriz].vitoria) + " |"
+            mensagem = mensagem + '\n'
+        mensagem = mensagem + "----------------------------------------\n"
+        return str(mensagem)
+
     def movimentoG(self, player, tabuleiroAJogar = None):
         """
         Esse método é responsável por fazer a jogada no tabuleiro grande
@@ -138,6 +149,7 @@ class tab_G:
             self.placar2[coord] = self.matrizG[coord].vitoria
             self.encerradas = sum(self.placar1)
             # print(f"Tabuleiro encerrado, aqui venceu {self.matrizG[coord].vitoria}")
+            print(self.displayTabG())
             return self.matrizG[coord].vitoria
         
 
@@ -146,6 +158,7 @@ class tab_G:
        # jogada representa o próximo tabuleiro a ser jogado
         jogada = self.matrizG[coord].movimento(player) 
 
+        # self.displayTabG()
         
         return jogada
         
@@ -181,9 +194,11 @@ class tab_G:
         if pontosA>pontosB:
             self.vitoria = "X"
             j1.envia("Você venceu!")
+            j2.envia("Você perdeu!")
         elif pontosB>pontosA:
             self.vitoria = "O"
             j2.envia("Você venceu!")
+            j1.envia("Você perdeu!")
         else:
             self.vitoria = "Velha"
             j1.envia("Empate!")
