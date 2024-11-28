@@ -1,4 +1,5 @@
-def conv(tab, coord):
+from jogadores import Jogador
+def conv(tab, coord, jogador):
     coords = [0,1,2]
     while True:
         try:
@@ -7,10 +8,12 @@ def conv(tab, coord):
             if vert in coords and hori in coords:
                 break
             else:
-                coord = input("As coordenadas devem estar entre 1,2,3\n")
+                jogador.envia("Erro: As coordenadas devem estar entre 1,2,3")
+                coord = jogador.recebe(1024)
         except ValueError:
             #print("except")
-            coord = input("Coordenadas inválidas, tente novamente\n")   
+            jogador.envia("Erro: Coordenadas inválidas, tente novamente")
+            coord = jogador.recebe(1024)
     if tab == 'P':
         return vert, hori
     if tab == 'G':
@@ -31,7 +34,7 @@ class tab_P:
 
     def movimento(self,player, vert, hori): 
         if self.matrizP[vert][hori] != 0 or (vert > 3) or (hori > 3):
-            print("Movimento inválido")
+            player.envia("Erro: Movimento inválido")
             return 0 #se a casa já estiver ocupada ou nao existir
         else:
             self.matrizP[vert][hori] = player
@@ -71,17 +74,7 @@ class tab_P:
             r = True
         
         return r
-        #if self.ocupadas >= 3:
-        #    for i in range(3):
-        #        if ((self.matrizP[i][0] == self.matrizP[i][1] == self.matrizP[i][2] and self.matrizP[i][0] != 0) or 
-        #            (self.matrizP[0][i] == self.matrizP[1][i] == self.matrizP[2][i] and self.matrizP[0][i] != 0)):
-        #            print("vitoria da coluna/linha")
-        #            return True
-        #    if((self.matrizP[0][0] == self.matrizP[1][1] == self.matrizP[2][2]) or
-        #       (self.matrizP[2][0] == self.matrizP[1][1] == self.matrizP[0][2])) and self.matrizP[1][1] !=0 :
-        #        print("vitoria da diagonal")
-        #        return True
-        #return False
+    
         
     def print(self):
         for linha in self.matrizP:
@@ -119,36 +112,40 @@ class tab_G:
             return r
         
 
-    def print(self):
+    def toString(self):
+        mensagem = ''
         for LINHA in range(3):
             for linha in range(3):
                 for matriz in range(3*LINHA,3*(LINHA+1)):
-                    print("|", (self.matrizG[matriz]).matrizP[linha],"|", end='')
-                print('\n')
-            print("----------------------------------------")
+                    mensagem = mensagem + "| " + str(self.matrizG[matriz].matrizP[linha]) + " |"
+                mensagem = mensagem + '\n' 
+            mensagem = mensagem + "----------------------------------------\n"
+        return str(mensagem)
             
-    def fim(self):
+    def fim(self, j1,j2):
         pontosA = 0
         pontosB = 0
         pontosV = 0
         for player in self.placar2:
-            if player == 'A':
+            if player == 'X':
                 pontosA+=1
-            elif player == 'B':
+            elif player == 'O':
                 pontosB+=1
             else:
                 pontosV+=1
         if pontosA>pontosB:
-            self.vitoria = "A"
+            self.vitoria = "X"
+            j1.envia("Você venceu!")
         elif pontosB>pontosA:
-            self.vitoria = "B"
+            self.vitoria = "O"
+            j2.envia("Você venceu!")
         else:
             self.vitoria = "Velha"
-            print("Empatou")
+            j1.envia("Empate!")
+            j2.envia("Empate!")
             return 0;
         print(f"{self.vitoria} venceu o jogo")
         return 1;
-
 
 
 export = tab_G, tab_P, conv

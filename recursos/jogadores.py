@@ -33,7 +33,9 @@ class Jogador():
             except Exception as e:
                 time.sleep(2)
                 continue
-
+    
+    def close(self):
+        self.socket.close()
     
     def get_endereco(self):
         return self.endereco

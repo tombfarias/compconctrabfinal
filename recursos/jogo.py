@@ -5,21 +5,30 @@ class Jogo(multiprocessing.Process):
     def __init__(self, jogador1, jogador2, canal):
         super().__init__()
         self.set_jogadores(jogador1, jogador2)
-        self.tab_P = tab_P()
-        self.tabG = tab_G()
+        self.tabuleiro = tab_G()
+        self.escolhe_tab = True
 
         self.canal = canal
 
+    def enviar(self, mensagem):
+        self.canal.send(mensagem.encode())
+
     def enviarVencedor(self, jogador):
-        self.canal.send(f"O jogador {jogador.username} venceu!".encode())
+        self.enviar(f"O jogador {jogador.username} venceu!")
 
     def enviarEmpate(self):
-        self.canal.send("O jogo terminou empatado!".encode())
+        self.enviar("O jogo terminou empatado!")
 
-
-
+    def requisitarJogada(self, jogador):
+        self.enviar("Digite a sua jogada: ")
+        return jogador.recebe(1024)
+    
+    def requisitarJogadaInvalida(self, jogador):
+        self.enviar("Jogada inválida. Tente novamente: ")
+        return jogador.recebe(1024)
 
     def set_jogadores(self, jogador1, jogador2):
+        print(f"{jogador1} {jogador2}")
         self.jogador1 = jogador1
         self.jogador2 = jogador2
 
@@ -42,10 +51,10 @@ class Jogo(multiprocessing.Process):
         jogador_atual = self.jogador2
         troca = True
         while self.tabuleiro.encerradas < 9: #enquanto o jogo grande não acabar, continua
-            self.tabuleiro.print()
-            print(self.tabuleiro.placar1)
-            print()
-            print(self.tabuleiro.placar2)
+            print(self.tabuleiro.toString())
+            # print(self.tabuleiro.placar1)
+            # print()
+            # print(self.tabuleiro.placar2)
             
             if troca:
                 if jogador_atual == self.jogador1:
@@ -54,7 +63,8 @@ class Jogo(multiprocessing.Process):
                     jogador_atual = self.jogador1
                 
             if self.escolhe_tab: #se for a primeira jogada ou for enviado pra um tabuleiro já encerrado
-                A = input("Jogada tab grande \n")
+                self.enviar("Digite a sua jogada: ")
+                A = jogador_atual.recebe(1024)
                 if A.upper() == "FIM":
                     print("Jogo encerrado")
                     break
@@ -79,7 +89,11 @@ class Jogo(multiprocessing.Process):
                 #break
             
         return self.tabuleiro.fim()
-                
+    
+    def close(self):
+        self.canal.close()
+        self.terminate()
+        self.join()
 
 
     def run(self):

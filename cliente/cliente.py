@@ -9,6 +9,7 @@ class Cliente():
     def __init__(self):
         super().__init__()
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
         self.username = ''
         self.connect()
 
@@ -16,7 +17,7 @@ class Cliente():
         while True:
             try:
                 self.socket.connect((HOST, PORT))
-                print("Conectando ao servidor...")
+                print("Conectando ao servidor...", self.socket.getpeername())
                 break
             except Exception as e:
                 print(f"Erro: {e}. Tentando novamente em 5s...")
@@ -33,14 +34,21 @@ class Cliente():
         self.socket.send(msg.encode('utf-8'))
     
     def recebe(self, tam):
-        while True:
-            try:
-                return self.socket.recv(tam).decode('utf-8')
-            except socket.error as e:
-                if e.errno == 10035:
-                    continue
-                else:
-                    raise e
+        msg = ''
+        try:
+            msg = self.socket.recv(tam).decode('utf-8')
+            if msg == '':
+                print("Conexão fechada pelo servidor.")
+                self.close()
+                exit(1)
+            
+        except socket.error as e:
+            print(f"Erro ao receber dados: {e}")
+            self.close()
+            exit(1)
+                
+
+        return msg
     
     def close(self):
         self.socket.close()
@@ -54,12 +62,10 @@ class Cliente():
         while True:
             msg = self.recebe(1024)
             print(msg)
-            if msg == "Digite sua jogada: ":
+            time.sleep(1)
+            if msg == "Digite sua jogada: " or "Jogada inválida. Tente novamente: ":
                 self.jogada()
-            elif msg == "Jogada inválida. Tente novamente.":
-                self.jogada() 
             elif msg == "Você venceu!" or msg == "Você perdeu!" or msg == "Empate!":
-                print(msg)
                 break
             else:
                 continue
