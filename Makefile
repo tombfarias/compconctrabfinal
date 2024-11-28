@@ -6,3 +6,11 @@ run:
 run-client:
 	python cliente/cliente.py
 
+test-client:
+	python testeCliente.py
+
+test-client-2:
+	python testeCliente2.py
+
+test-server:
+	python testeServer.py

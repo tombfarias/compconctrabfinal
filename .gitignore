@@ -5,3 +5,6 @@
 !cliente/
 !Makefile
 !README.md
+!testeCliente.py
+!testeServer.py
+!testeCliente2.py
