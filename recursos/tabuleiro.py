@@ -69,18 +69,18 @@ class tab_P:
 
                 if self.fim(vert, hori, player): #testa se o tabuleiro acabou
                     self.vitoria = player #se acabou define vitória
-
-                    print(f'{self.vitoria} venceu esse tabuleiro')
+                    return None
+                    
                 if self.ocupadas == 9: #se ocupou todas as casas e ainda não tem vitória, deu velha
                     self.vitoria = 'V'
-                    print("Deu velha nesse tabuleiro")
+                    return None
 
                 return pos
     
     def fim(self, v,h, player):
         #lista_A, lista_B = [],[]
-        print("V= ",v)
-        print("H=",h)
+        # print("V= ",v)
+       # print("H=",h)
         r = False
         if ((v+h) == 4 or v==h):
             if self.matrizP[0][0] == self.matrizP[1][1] == self.matrizP[2][2] == player:
@@ -141,22 +141,12 @@ class tab_G:
             return self.matrizG[coord].vitoria
         
 
-        # player.envia("Digite a sua jogada: ")
-        # B = player.recebe(1024)
 
-        # B = input(f'Jogada tab menor {coord + 1} \n player = {player} \n')
-        # if B.upper() == "FIM":
 
-         #    print("Digite 'fim' novamente")
-        #     return 10
-        # B1, B2 = conv('P', B, player)
-       #  print(B1,B2)
+       # jogada representa o próximo tabuleiro a ser jogado
         jogada = self.matrizG[coord].movimento(player) 
-        #if jogada == 0: #Movimento inválido dentro do tab_pequeno
-            #return 11
-        #else:
-        # r = conv('G', jogada, player)
-        # print("Jogador enviado para tab", r + 1)
+
+        
         return jogada
         
 
