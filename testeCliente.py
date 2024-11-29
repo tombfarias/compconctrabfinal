@@ -9,7 +9,11 @@ nome = random.choice(nomes)
 nome = nome + '\n'
 coordenadas = []
 for i in range(500):
-    coordenadas.append(str(random.randint(1, 3)) + str(random.randint(1, 3)) + '\n')
+    for z in range(1, 4):
+        for y in range(1, 4):
+            coordenadas.append(str(z) + str(y) + '\n')    
+
+    # coordenadas.append(str(random.randint(1, 3)) + str(random.randint(1, 3)) + '\n')
 coordenadas = ''.join(coordenadas)
 entrada = nome + coordenadas
 

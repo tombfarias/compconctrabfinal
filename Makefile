@@ -14,3 +14,8 @@ test-client-2:
 
 test-server:
 	python testeServer.py
+
+run-c:
+	gcc -o a.out server/server.c -lm
+	./a.out
+	rm -f a.out

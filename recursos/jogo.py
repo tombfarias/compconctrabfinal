@@ -57,7 +57,7 @@ class Jogo(multiprocessing.Process):
 
         while self.tabuleiro.encerradas < 9: #enquanto o jogo grande não acabar, continua
             # Cada rodada é uma iteração do loop
-
+            # print(f"Encerradas: {self.tabuleiro.encerradas}")
             # clear a cada rodada
             self.jogador1.envia("clear")
             self.jogador2.envia("clear")
@@ -75,14 +75,25 @@ class Jogo(multiprocessing.Process):
                 else:
                     jogador_atual = self.jogador1
             
-       
+            # print("Rodada")
+            
+            if self.tabuleiro.verificarJogoEncerrou():
+                break
             
             tabP_atual = self.tabuleiro.movimentoG(jogador_atual, tabP_atual)
-
+            
 
         #return self.tabuleiro.fim()
         print("Fim do jogo")
         fim = self.tabuleiro.fim(self.jogador1, self.jogador2)
+
+        if fim == 0:
+            self.enviarVencedor(self.jogador1)
+        elif fim == 1:
+            self.enviarVencedor(self.jogador2)
+        else:
+            self.enviarEmpate()
+        
     
     def close(self):
         self.canal.close()

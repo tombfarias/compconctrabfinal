@@ -133,7 +133,7 @@ class Server():
         while True:
             try:
                 msg = canal.recv()
-                self.msg_jogo.append(msg)
+                self.msg_jogo.put(msg)
                 if msg == "FIM":
                     self.removerJogo(jogo)
 
@@ -145,12 +145,14 @@ class Server():
 
         # Terminar conexão com jogadores
         for jogador in self.jogadores.values():
-            jogador.close()
+            if type(jogador) == Jogador:
+                jogador.close()
 
         # Terminar conexão com jogos
         for jogo in self.jogos:
-            jogo.close()
-
+            if type(jogo) == Jogo:
+                jogo.close()
+                
         # Encerrar servidor
         # Encerrar todos os processos
         self.fimProgramaW.send(b'fim')

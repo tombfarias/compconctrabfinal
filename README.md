@@ -1,19 +1,24 @@
-compconctrabfinal
+# Trabalho Final de Computação Concorrente
+Autores: André Luis Alves Martins / Tomás Barboza de Farias
 
-Esse repositório contem uma implementação do super jogo da velha.
-O jogo é formado por três diretórios
-cliente
-recursos
-servidor
+## 1. Como testar
+Idealmente rodando em 3 terminais diferentes, um para cada comando abaixo:
+```bash
+$ make run # Roda o servidor
+$ make run-client # Roda o cliente
+$ make test-client # Roda o conjunto de teste do cliente
+$ make test-client-2 # Roda o conjunto 2 de teste do cliente
+$ make test-server # Roda o conjunto de teste do servidor
+```
 
-O diretório cliente contem o código cliente.py que deve ser executado pelo usuário:
-python3 cliente2.py
+Rodar um servidor e 2 clientes
 
-O repositório recursos contem a estrutura do jogo, possuindo um código referente a criação e "cadastro" dos jogadores no jogo, um código jogo.py que possui a classe Jogo, essa classe une os outros dois elementos e é onde efetivamente o jogo está acontecendo e um código tabuleiro que constrói a estrutura do(s) tabuleiro(s) usados no jogo.
 
-O diretório server contem o código server.py que estará sendo executado na máquina do servidor para manter o game aberto e disponível para acesso de usuários
+## 2. Estrutura do projeto
+O projeto foi dividido em 3 arquivos principais:
+- `server.py`: Contém a implementação do servidor
+- `client.py`: Contém a implementação do cliente
+- `jogo.py`: Contém o processo que roda o jogo
 
-Portanto, para funcionamento do game o server deve estar aberto para aceitação de usuários e pelo menos dois clientes devem iniciar uma conexão.
+Além disso, temos o `server.c` que roda o servidor ao mesmo tempo em que roda o algoritmo para calcular o pi
 
-Além disso, temos no diretório server um código pyc.c, esse código em C tem como propósito mostrar a concorrência que ocorre no servidor. Possui duas threads, uma delas calcula pi usando a fórmula de Bailey repetidamente e conta quantas vezes esse valor foi calculado (como a fórmula chega ao limite do computador muito rápido, essa contagem é feita de 1000000000 em 1000000000) enquanto a outra thread estará com o servidor do jogo aberto para conexões. 
-As duas threads rodam de maneira paralela, ou seja, além da concorrência do jogo, o computador do servidor ainda tem CPU disponível para fazer outras coisas, nesse caso, o cálculo de pi.

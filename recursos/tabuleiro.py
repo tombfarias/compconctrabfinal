@@ -1,5 +1,6 @@
 from jogadores import Jogador
-def conv(tab, coord, jogador):
+import time
+def conv(tab, coord, jogador: Jogador):
     coords = [0,1,2]
     # print(f"coord = {coord}")
     while True:
@@ -32,18 +33,22 @@ def coordenadasParaTabP(coord):
 class tab_P:
     def __init__(self, linha, coluna):
         self.matrizP = [[0 for i in range(3)] for j in range(3)]
-        self.placar1 = [0,0,0,0,0,0,0,0,0]
-        self.placar2 = [0,0,0,0,0,0,0,0,0]
+        # self.placar1 = [0,0,0,0,0,0,0,0,0]
+        # self.placar2 = [0,0,0,0,0,0,0,0,0]
         self.ocupadas = 0
         self.vitoria = 0
         self.linha = linha
         self.coluna = coluna
+        self.terminado = False
+
+    def getCoordenadas(self):
+        return self.linha * 3 + self.coluna
 
     def imprimirCoordenadas(self):
         return f'({self.linha + 1}, {self.coluna + 1})'
     
 
-    def movimento(self, player): 
+    def movimento(self, player: Jogador): 
         while True:
             player.envia(f"Digite a sua jogada no tabuleiro {self.imprimirCoordenadas()}: ")
             
@@ -57,8 +62,9 @@ class tab_P:
             else:
                 self.matrizP[vert][hori] = player
                 pos = conv('G', str(vert)+str(hori), player)
-                self.placar1[pos] = 1
-                self.placar2[pos] = player 
+                # self.placar1[pos] = 1
+                # self.placar2[pos] = player 
+                self.ocupadas += 1
 
                 ###########
 
@@ -67,37 +73,36 @@ class tab_P:
 
                 ############
 
-                if self.fim(vert, hori, player): #testa se o tabuleiro acabou
+                if self.fim(player): #testa se o tabuleiro acabou
                     self.vitoria = player #se acabou define vitória
-                    return None
+                    self.terminado = True
                     
                 if self.ocupadas == 9: #se ocupou todas as casas e ainda não tem vitória, deu velha
                     self.vitoria = 'V'
-                    return None
+                    self.terminado = True
 
                 return pos
     
-    def fim(self, v,h, player):
+    def fim(self, player: Jogador):
         #lista_A, lista_B = [],[]
         # print("V= ",v)
        # print("H=",h)
         r = False
-        if ((v+h) == 4 or v==h):
-            if self.matrizP[0][0] == self.matrizP[1][1] == self.matrizP[2][2] == player:
-                print("vitoria da diagonal prnicipal")
-                r = True
-            if self.matrizP[2][0] == self.matrizP[1][1] == self.matrizP[0][2] == player:
-                print("vitoria da diagonal secundaria")
-                r = True
+       
+        if self.matrizP[0][0] == self.matrizP[1][1] == self.matrizP[2][2] == player:
+                # print("vitoria da diagonal prnicipal")
+            r = True
+        if self.matrizP[2][0] == self.matrizP[1][1] == self.matrizP[0][2] == player:
+                # print("vitoria da diagonal secundaria")
+            r = True
         
-        
-        if self.matrizP[v][0] == self.matrizP[v][1] == self.matrizP[v][2] == player:
+        for i in range(3):
+            if self.matrizP[i][0] == self.matrizP[i][1] == self.matrizP[i][2] == player:
             #print("vitoria da linha")
-            r = True
+                r = True
         
-        if self.matrizP[0][h] == self.matrizP[1][h] == self.matrizP[2][h] == player:
-            #print("vitoria da coluna")
-            r = True
+            if self.matrizP[0][i] == self.matrizP[1][i] == self.matrizP[2][i] == player:
+                r = True
         
         return r
     
@@ -117,8 +122,14 @@ class tab_G:
         self.placar1 = [0,0,0,0,0,0,0,0,0]
         self.placar2 = [0,0,0,0,0,0,0,0,0]
         self.encerradas = 0
-        self.vitoria = 0
+        self.vitoria = None
     
+    def verificarJogoEncerrou(self):
+        for tab in self.matrizG:
+            if tab.terminado == False:
+                return False
+            
+
     def displayTabG(self):
         mensagem = ''
         mensagem = mensagem + "----------------------------------------\n"
@@ -130,36 +141,52 @@ class tab_G:
         mensagem = mensagem + "----------------------------------------\n"
         return str(mensagem)
 
-    def movimentoG(self, player, tabuleiroAJogar = None):
+    def movimentoG(self, player: Jogador, tabuleiroAJogar = None):
         """
         Esse método é responsável por fazer a jogada no tabuleiro grande
         """
-
+        
         # tabuleiro a jogar deve ser um valor inteiro de 0 a 8
         if tabuleiroAJogar == None:
             player.envia("Escolha qual tabuleiro jogar: ")
             coord = player.recebe(1024)
             coord = conv('G', coord, player)
+            
         else:
-            coord = tabuleiroAJogar
+            coord = tabuleiroAJogar.getCoordenadas()
 
+        vezesNoLoop = 0
+        while vezesNoLoop < 9:
+            if self.matrizG[coord].terminado == True:
+                    if self.verificarJogoEncerrou():
+                        self.encerradas = 9
+                        return None
+                    player.envia("Tabuleiro já encerrado, escolha outro: ")
+                    coord = player.recebe(1024)
+                    coord = conv('G', coord, player)
+                    vezesNoLoop += 1
+                    continue
+            else:
+                break
 
-        if self.matrizG[coord].vitoria != 0: #Vitoria começa com 0, 1 se deu velha X ou O se alguém já venceu
+        if vezesNoLoop == 9:
+            self.encerradas = 9
+            return None
+
+        # jogada representa o próximo tabuleiro a ser jogado
+        jogada = self.matrizG[coord].movimento(player)
+        jogada = self.matrizG[jogada] 
+
+        if jogada != None and jogada.terminado == True: #Vitoria começa com 0, 1 se deu velha X ou O se alguém já venceu
             self.placar1[coord] = 1
             self.placar2[coord] = self.matrizG[coord].vitoria
             self.encerradas = sum(self.placar1)
-            # print(f"Tabuleiro encerrado, aqui venceu {self.matrizG[coord].vitoria}")
-            print(self.displayTabG())
-            return self.matrizG[coord].vitoria
+            
+            return None
         
+        time.sleep(2)
 
-
-
-       # jogada representa o próximo tabuleiro a ser jogado
-        jogada = self.matrizG[coord].movimento(player) 
-
-        # self.displayTabG()
-        
+       
         return jogada
         
 
@@ -173,7 +200,7 @@ class tab_G:
             mensagem = mensagem + "----------------------------------------\n"
         return str(mensagem)
     
-    def enviarTabuleiro(self, jogador):
+    def enviarTabuleiro(self, jogador: Jogador):
         jogador.envia(self.toString())
         jogador.envia("Placar: \n")
         jogador.envia(str(self.placar1) + '\n')
@@ -181,31 +208,32 @@ class tab_G:
 
             
     def fim(self, j1,j2):
-        pontosA = 0
-        pontosB = 0
-        pontosV = 0
+        
+       
+        pontosEmpate = 0
         for player in self.placar2:
-            if player == 'X':
-                pontosA+=1
-            elif player == 'O':
-                pontosB+=1
+            if player == j1:
+                j1.vitorias += 1
+            elif player == j2:
+                j2.vitorias += 1
             else:
-                pontosV+=1
-        if pontosA>pontosB:
-            self.vitoria = "X"
+                pontosEmpate += 1
+        if j1.vitorias > j2.vitorias:
+            self.vitoria = j1
             j1.envia("Você venceu!")
             j2.envia("Você perdeu!")
-        elif pontosB>pontosA:
-            self.vitoria = "O"
+            return 0
+        elif j2.vitorias > j1.vitorias:
+            self.vitoria = j2
             j2.envia("Você venceu!")
             j1.envia("Você perdeu!")
+            return 1
         else:
-            self.vitoria = "Velha"
+            self.vitoria = None
             j1.envia("Empate!")
             j2.envia("Empate!")
-            return 0;
-        print(f"{self.vitoria} venceu o jogo")
-        return 1;
+            return 2;
+    
 
 
 export = tab_G, tab_P, conv

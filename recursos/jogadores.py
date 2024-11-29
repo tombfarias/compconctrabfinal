@@ -6,6 +6,7 @@ class Jogador():
         self.socket = socket
         self.endereco = endereco
         self.peca = ''
+        self.vitorias = 0
 
     def set_peca(self, peca):
         self.peca = peca
