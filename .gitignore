@@ -1,5 +1,6 @@
 # Ignorar tudo menos as pastas server, recursos, cliente e a makefile
 *
+
 !server/
 !recursos/
 !cliente/
@@ -8,3 +9,6 @@
 !testeCliente.py
 !testeServer.py
 !testeCliente2.py
+
+!server/server.c
+!server/server.py
